@@ -1,9 +1,21 @@
 #pragma once
-class CBrave
+
+#include "CUnit.h"
+//#include "Clime.h"
+
+// 클래스 전방 선언. 클래스의 이름만 미리 알려준다
+class CSlime;
+
+class CBrave : public CUnit
 {
-public:
+private:
     int mX = 0;
-    float mHP = 1000.0f;
-    float mAP = 100.0f;
+
+public:
+    CBrave();
+    void DoMove(int tVelocity);
+    //void DoDamage(CSlime* tSlime);
+    virtual void DoDamage(CUnit* tAttacker) override ;
+    inline const int GetX() const { return mX; }
 };
 
