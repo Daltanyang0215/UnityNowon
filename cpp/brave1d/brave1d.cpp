@@ -29,6 +29,15 @@
 
 	 상속성
 		 공통된 속성들을 부모클래스에 두고, 자식클래스 들은 부모클래스를 이어받아 작성한다.
+
+	 다향성
+		 동일한 메시지(함수)에 다른 반응. 상위클래스의 함수를 호출하여 자식의 기능을 사용
+
+
+	디자인 패턴
+
+	싱글톤 패턴 - 생성(객체를 어떻게 생성할 것인지에 대한 해결책)
+		목적 : 객체의 최대 생성갯수를 1개로 제한하는 패턴
  */
 
 #include <iostream>
@@ -36,6 +45,8 @@
 
 #include "CBrave.h"
 #include "CSlime.h"
+#include "CMgr.h"
+#include "CUIPlay.h"
 
 using namespace std;
 
@@ -48,19 +59,17 @@ int main()
 {
 	srand((unsigned int)time(nullptr));
 
-	int tWorld[5] = { 100, 0, 1, 0, 200 };
+	int tWorld[9] = { 100, 0, 1,0,10,0,1, 0, 200 };
+
+	CMgr::GetInstance();
+
 
 	CBrave* tBrave = new CBrave;
 	CSlime* tSlime = new CSlime;
 
-
-
-
+	CUIPlay tUIPlay;
 
 	char tMoveDir = 'd';
-
-
-
 
 	cout << "((용사와 슬라임))" << endl;
 	cout << "==종료하려면 n을 입력하세요==" << endl;
@@ -194,7 +203,7 @@ int main()
 					if (tSlime->GetHP() <= 0)
 					{
 						cout << "Slime is very tired." << endl;
-
+						CMgr::GetInstance()->mExp += 300;
 						break;
 					}
 					if (tBrave->GetHP() <= 0)
@@ -205,8 +214,14 @@ int main()
 					}
 				}
 			}
+			tUIPlay.Display();
 		}
 		break;
+		case 10:
+		{
+			cout << "Brave is in clinic." << "(You are on" << tBrave->GetX() << "Tile)" << endl;
+			tBrave->Heal();
+		}
 		case 100:
 		{
 			cout << "Brave is in home." << "(You are on" << tBrave->GetX() << "Tile)" << endl;
@@ -221,15 +236,15 @@ int main()
 	}
 
 
-	cout << "슬라임은 심심하다." << endl << "어서 빨리 일어나라! 용사!" << endl;
+	tUIPlay.Display();
 
-	if (tBrave != nullptr) 
+	if (tBrave != nullptr)
 	{
 		delete tBrave;
 		tBrave = nullptr;
 	}
-	
-	if (tSlime != nullptr) 
+
+	if (tSlime != nullptr)
 	{
 		delete tSlime;
 		tSlime = nullptr;

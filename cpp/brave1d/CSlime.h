@@ -8,7 +8,10 @@ class CSlime : public CUnit
 {
 public:
 	CSlime();
+	virtual ~CSlime() {};
+
 	//void DoDamage(CBrave* tBrave);
-	virtual void DoDamage(CUnit* tAttacker)override;
+	virtual void DoDamage(CUnit* tAttacker);
+	virtual void DisplayHP() override;
 };
 
