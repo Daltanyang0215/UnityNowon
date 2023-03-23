@@ -7,6 +7,7 @@ class pgeCircleShootor : public olc::PixelGameEngine
 {
 	CActor mActor;
 
+
 public:
 	pgeCircleShootor()
 	{
@@ -18,39 +19,46 @@ public:
 	bool OnUserCreate() override
 	{
 		// Called once at the start, so create things here
-
-		mActor.mActorX = ScreenWidth() * 0.5f;
-		mActor.mActorY = ScreenHeight() * 0.5f+75.0f;
+		
+		mActor.mPosition.x = ScreenWidth() * 0.5f;
+		mActor.mPosition.y = ScreenHeight() * 0.5f + 75.0f;
 
 		return true;
 	}
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		this->Clear(olc::BLACK);
+		//
+		// 윈도우 좌표계라서 y축이 반전되어있음
+		//
+
+#pragma region player Movement
+		olc::vf2d tVelocity(0, 0);
 		if (GetKey(olc::UP).bHeld) {
 			//mActor.mActorY -= mActor.mActorMoveSpeed * fElapsedTime;
-			mActor.DoMove(0, 1, fElapsedTime);
+			//mActor.DoMove(0, 1, fElapsedTime);
+			tVelocity.y -= 1;
 		}
 		if (GetKey(olc::DOWN).bHeld) {
 			//mActor.mActorY += mActor.mActorMoveSpeed * fElapsedTime;
-			mActor.DoMove(0, -1, fElapsedTime);
+			//mActor.DoMove(0, -1, fElapsedTime);
+			tVelocity.y += 1;
 		}
 		if (GetKey(olc::RIGHT).bHeld) {
 			//mActor.mActorX += mActor.mActorMoveSpeed * fElapsedTime;
-			mActor.DoMove(1, 0, fElapsedTime);
+			//mActor.DoMove(1, 0, fElapsedTime);
+			tVelocity.x += 1;
 		}
 		if (GetKey(olc::LEFT).bHeld) {
 			//mActor.mActorX -= mActor.mActorMoveSpeed * fElapsedTime;
-			mActor.DoMove(-1, 0, fElapsedTime);
+			//mActor.DoMove(-1, 0, fElapsedTime);
+			tVelocity.x -= 1;
 		}
+		mActor.DoMove(tVelocity, fElapsedTime);
+		DrawCircleEquaion(mActor.mPosition.x, mActor.mPosition.y, 15, olc::BLUE);
+#pragma endregion
 
-
-		this->Clear(olc::BLACK);
-		//DrawLineEquaion(0, 0, 100, 100);
-		//DrawLineEquaion(0, 0, 100, 400);
-		//DrawLineEquaion(100, 0, 100, 400);
-
-		DrawCircleEquaion(mActor.mActorX, mActor.mActorY, 15, olc::BLUE);
 
 		return true;
 	}
@@ -120,7 +128,7 @@ void pgeCircleShootor::DrawLineEquaion(int tX_0, int tY_0, int tX_1, int tY_1) {
 	}
 }
 
-void pgeCircleShootor::DrawCircleEquaion(int tXCenter, int tYCenter, int tRadius, olc::Pixel tColor=olc::WHITE)
+void pgeCircleShootor::DrawCircleEquaion(int tXCenter, int tYCenter, int tRadius, olc::Pixel tColor = olc::WHITE)
 {
 	int tX = 0;
 	int tY = 0;
@@ -130,7 +138,7 @@ void pgeCircleShootor::DrawCircleEquaion(int tXCenter, int tYCenter, int tRadius
 
 	while (tY >= tX) {
 		Draw(tX + tXCenter, tY + tYCenter, tColor);
-		Draw(tY +tXCenter, tX + tYCenter, tColor);
+		Draw(tY + tXCenter, tX + tYCenter, tColor);
 
 		Draw(tX + tXCenter, -tY + tYCenter, tColor);
 		Draw(tY + tXCenter, -tX + tYCenter, tColor);
@@ -143,7 +151,7 @@ void pgeCircleShootor::DrawCircleEquaion(int tXCenter, int tYCenter, int tRadius
 
 
 		tX++;
-		tY = std::sqrtf((float)tRadius * tRadius - tX * tX)+0.5f;
+		tY = std::sqrtf((float)tRadius * tRadius - tX * tX) + 0.5f;
 	}
 
 }
