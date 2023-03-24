@@ -65,7 +65,7 @@ int main()
 
 
 	CBrave* tBrave = new CBrave;
-	CSlime* tSlime = new CSlime;
+	CSlime* tSlime[2] = { new CSlime,new CSlime };
 
 	CUIPlay tUIPlay;
 
@@ -104,7 +104,7 @@ int main()
 
 		if ('d' == tMoveDir)
 		{
-			if (tBrave->GetX() < 4)
+			if (tBrave->GetX() < 8)
 			{
 				//tBrave.mX = tBrave.mX + 1;
 				tBrave->DoMove(1);
@@ -129,88 +129,100 @@ int main()
 		case 1: //슬라임 있음
 		{
 			cout << "Slime is here." << "(You are on" << tBrave->GetX() << "Tile)" << endl;
+			int slimeIndex = 0;
+			if (tBrave->GetX() == 2) {
+				slimeIndex = 0;
+			}
+			else if (tBrave->GetX() == 6) {
+				slimeIndex = 1;
+			}
 
-			char tIsRollDice = 'r';
-			while (1)
-			{
-				cout << "Roll a Dice of Fate!(r):";
-				cin >> tIsRollDice;
-
-				if ('r' == tIsRollDice)
+			if (tSlime[slimeIndex]->GetHP() <= 0) {
+				cout << "슬라임이 이미 쓰러져있다..." << endl;
+			}
+			else {
+				char tIsRollDice = 'r';
+				while (1)
 				{
-					//roll dice
-					int tDiceNumber = rand() % 6 + 1;
-					cout << tDiceNumber << endl;
+					cout << "Roll a Dice of Fate!(r):";
+					cin >> tIsRollDice;
 
-					//switch (tDiceNumber)
-					//{
-					//case 1:
-					//case 2:
-					//case 3:
-					//{
-					//	tBrave->DoDamage(tSlime);
-					//	//tBrave.mHP = tBrave.mHP - tSlime.mAP;
-					//	cout << "Brave is damaged" << endl;
-					//}
-					//break;
-					//case 4:
-					//case 5:
-					//case 6:
-					//{
-					//	//tSlime.mHP = tSlime.mHP - tBrave.mAP;
-					//	tSlime->DoDamage(tBrave);
-					//	cout << "Slime is damaged." << endl;
-					//}
-					//break;
-					//}
-					//if (tSlime->GetHP() <= 0)
-					//{
-					//	cout << "Slime is very tired." << endl;
-					//	break;
-					//}
-					//if (tBrave->GetHP() <= 0)
-					//{
-					//	cout << "Brave is very tired." << endl;
-					//	break;
-					//}
-					CUnit* tpUnit = nullptr;
-					CUnit* tpAttacker = nullptr;
+					if ('r' == tIsRollDice)
+					{
+						//roll dice
+						int tDiceNumber = rand() % 6 + 1;
+						cout << tDiceNumber << endl;
 
-					switch (tDiceNumber)
-					{
-					case 1:
-					case 2:
-					case 3:
-					{
-						tpUnit = tBrave;
-						tpAttacker = tSlime;
-						cout << "Brave is damaged" << endl;
-					}
-					break;
-					case 4:
-					case 5:
-					case 6:
-					{
-						tpUnit = tSlime;
-						tpAttacker = tBrave;
-						cout << "Slime is damaged." << endl;
-					}
-					break;
-					}
-					tpUnit->DoDamage(tpAttacker);
+						//switch (tDiceNumber)
+						//{
+						//case 1:
+						//case 2:
+						//case 3:
+						//{
+						//	tBrave->DoDamage(tSlime);
+						//	//tBrave.mHP = tBrave.mHP - tSlime.mAP;
+						//	cout << "Brave is damaged" << endl;
+						//}
+						//break;
+						//case 4:
+						//case 5:
+						//case 6:
+						//{
+						//	//tSlime.mHP = tSlime.mHP - tBrave.mAP;
+						//	tSlime->DoDamage(tBrave);
+						//	cout << "Slime is damaged." << endl;
+						//}
+						//break;
+						//}
+						//if (tSlime->GetHP() <= 0)
+						//{
+						//	cout << "Slime is very tired." << endl;
+						//	break;
+						//}
+						//if (tBrave->GetHP() <= 0)
+						//{
+						//	cout << "Brave is very tired." << endl;
+						//	break;
+						//}
+						CUnit* tpUnit = nullptr;
+						CUnit* tpAttacker = nullptr;
 
-
-					if (tSlime->GetHP() <= 0)
-					{
-						cout << "Slime is very tired." << endl;
-						CMgr::GetInstance()->mExp += 300;
+						switch (tDiceNumber)
+						{
+						case 1:
+						case 2:
+						case 3:
+						{
+							tpUnit = tBrave;
+							tpAttacker = tSlime[slimeIndex];
+							cout << "Brave is damaged" << endl;
+						}
 						break;
-					}
-					if (tBrave->GetHP() <= 0)
-					{
-						cout << "Brave is very tired." << endl;
-
+						case 4:
+						case 5:
+						case 6:
+						{
+							tpUnit = tSlime[slimeIndex];
+							tpAttacker = tBrave;
+							cout << "Slime is damaged." << endl;
+						}
 						break;
+						}
+						tpUnit->DoDamage(tpAttacker);
+
+
+						if (tSlime[slimeIndex]->GetHP() <= 0)
+						{
+							cout << "Slime is very tired." << endl;
+							CMgr::GetInstance()->mExp += 300;
+							break;
+						}
+						if (tBrave->GetHP() <= 0)
+						{
+							cout << "Brave is very tired." << endl;
+
+							break;
+						}
 					}
 				}
 			}
@@ -246,8 +258,10 @@ int main()
 
 	if (tSlime != nullptr)
 	{
-		delete tSlime;
-		tSlime = nullptr;
+		delete tSlime[0];
+		delete tSlime[1];
+		tSlime[0] = nullptr;
+		tSlime[1] = nullptr;
 	}
 
 	return 0;

@@ -25,7 +25,7 @@ void CBrave::DoDamage(CUnit* tAttacker) {
 }
 
 void CBrave::Heal() {
-	this->mAP = this->mHPMAX;
+	this->mHP = this->mHPMAX;
 	cout << "용사가 체력을 회복하였다" << endl;
 	this->DisplayHP();
 }

@@ -1,8 +1,14 @@
 #pragma once
-#include "olcPixelGameEngine.h"
 #include "CUnit.h"
+
+#include <vector>
+using namespace std;
+
+class CBullet;
+
 class CActor : public CUnit
 {
-
+public:
+	void DoFire(vector<CBullet*>& tBullets);
 };
 
