@@ -13,5 +13,5 @@ void CUnit::DoMove(olc::vf2d tVelocity, float t) {
 void CUnit::Render(olc::PixelGameEngine* tpEngine)
 {
 	if (mIsActive == false) return;
-	((pgeCircleShootor*)tpEngine)->DrawCircleEquation(this->mPosition.x, this->mPosition.y, 15.0f,color);
+	((pgeCircleShootor*)tpEngine)->DrawCircleEquation(this->mPosition.x, this->mPosition.y, mRadius,color);
 }

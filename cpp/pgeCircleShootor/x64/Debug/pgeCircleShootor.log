@@ -1,10 +1,7 @@
-﻿  pgeCircleShootor.cpp
-C:\Users\User\Documents\GitHub\UnityNowon\cpp\pgeCircleShootor\pgeCircleShootor.cpp(28,29): warning C4244: '=': 'int'에서 'T'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-          with
-          [
-              T=float
-          ]
-C:\Users\User\Documents\GitHub\UnityNowon\cpp\pgeCircleShootor\pgeCircleShootor.cpp(133,42): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\User\Documents\GitHub\UnityNowon\cpp\pgeCircleShootor\pgeCircleShootor.cpp(146,42): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\User\Documents\GitHub\UnityNowon\cpp\pgeCircleShootor\pgeCircleShootor.cpp(177,55): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+﻿  CEnemy.cpp
+  pgeCircleShootor.cpp
+C:\Users\User\Documents\GitHub\UnityNowon\cpp\pgeCircleShootor\pgeCircleShootor.cpp(213,42): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Documents\GitHub\UnityNowon\cpp\pgeCircleShootor\pgeCircleShootor.cpp(226,42): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\User\Documents\GitHub\UnityNowon\cpp\pgeCircleShootor\pgeCircleShootor.cpp(257,55): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  코드를 생성하고 있습니다...
   pgeCircleShootor.vcxproj -> C:\Users\User\Documents\GitHub\UnityNowon\cpp\pgeCircleShootor\x64\Debug\pgeCircleShootor.exe

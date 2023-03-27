@@ -5,11 +5,16 @@
 
 #include <vector>
 using namespace std;
+
+class CEnemy;
 // Override base class with your custom functionality
 class pgeCircleShootor : public olc::PixelGameEngine
 {
 	CActor* mActor = nullptr;
+	CEnemy* mEnemy = nullptr;
+	CEnemy* mEnemyAimed = nullptr;
 	vector<CBullet*> mBullets;
+	vector<CBullet*> mBulletsEnemy;
 
 public:
 	pgeCircleShootor()

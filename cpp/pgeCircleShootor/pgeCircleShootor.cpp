@@ -1,7 +1,8 @@
 ﻿#define OLC_PGE_APPLICATION
 #include "pgeCircleShootor.h"
 #include "CActor.h"
-
+#include "CEnemy.h"
+#include "config.h"
 
 int main()
 {
@@ -19,17 +20,41 @@ bool pgeCircleShootor::OnUserCreate()
 	mActor->mPosition.y = ScreenHeight() * 0.5f + 75.0f;
 	mActor->mIsActive = true;
 
+	mEnemy = new CEnemy();
+	mEnemy->mActorMoveSpeed = 40;
+	mEnemy->color = olc::WHITE;
+	mEnemy->mPosition.x = ScreenWidth() * 0.5f;
+	mEnemy->mPosition.y = ScreenHeight() * 0.5f -45.0f;
+	mEnemy->mIsActive = true;
+	
+	mEnemyAimed = new CEnemy();
+	mEnemyAimed->mActorMoveSpeed = 20;
+	mEnemyAimed->color = olc::GREY;
+	mEnemyAimed->mPosition.x = ScreenWidth() * 0.5f;
+	mEnemyAimed->mPosition.y = ScreenHeight() * 0.5f - 85.0f;
+	mEnemyAimed->mIsActive = true;
+	mEnemyAimed->mTimeTick = 0.15f;
+
 	mBullets.clear();
 	CBullet* tpBullet = nullptr;
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i <ACTOR_BULLET_COUNT ; i++)
 	{
 		tpBullet = new CBullet;
-		// 지울거임
-			tpBullet->mPosition.x = i*20;
-		//
 		tpBullet->mRadius = 3;
-		tpBullet->color = olc::RED;
+		tpBullet->mActorMoveSpeed = 400;
+		tpBullet->mMoveVector = olc::vf2d(0, -1);
+		tpBullet->color = olc::CYAN;
 		mBullets.push_back(tpBullet);
+	}
+
+	mBulletsEnemy.clear();
+	for (int i = 0; i < ENEMY_BULLET_COUNT; i++)
+	{
+		tpBullet = new CBullet;
+		tpBullet->mRadius = 3;
+		tpBullet->mActorMoveSpeed = 300;
+		tpBullet->color = olc::RED;
+		mBulletsEnemy.push_back(tpBullet);
 	}
 
 	return true;
@@ -38,6 +63,14 @@ bool pgeCircleShootor::OnUserDestroy() {
 	if (mActor != nullptr) {
 		delete mActor;
 		mActor = nullptr;
+	}
+	if (mEnemy != nullptr) {
+		delete mEnemy;
+		mEnemy = nullptr;
+	}
+	if (mEnemyAimed != nullptr) {
+		delete mEnemyAimed;
+		mEnemyAimed = nullptr;
 	}
 	//for (int i = 0; i < 10; i++)
 	/*{
@@ -51,13 +84,20 @@ bool pgeCircleShootor::OnUserDestroy() {
 			*t = nullptr;
 		}
 	}
+	for (vector<CBullet*>::iterator t = mBulletsEnemy.begin(); t != mBulletsEnemy.end(); ++t)
+	{
+		if (*t != nullptr) {
+			delete* t;
+			*t = nullptr;
+		}
+	}
 	mBullets.clear();
+	mBulletsEnemy.clear();
 	return true;
 }
 
 bool pgeCircleShootor::OnUserUpdate(float fElapsedTime)
 {
-	this->Clear(olc::BLACK);
 	//
 	// 윈도우 좌표계라서 y축이 반전되어있음
 	//
@@ -84,15 +124,55 @@ bool pgeCircleShootor::OnUserUpdate(float fElapsedTime)
 		//mActor.DoMove(-1, 0, fElapsedTime);
 		tVelocity.x -= 1;
 	}
+
+	if (GetKey(olc::SPACE).bPressed) {
+		mActor->DoFire(mBullets);
+	}
 	mActor->DoMove(tVelocity, fElapsedTime);
 #pragma endregion
 
+#pragma region Enemy
+	mEnemy->DoMove(olc::vf2d(1, 0), fElapsedTime);
+
+	if (mEnemy->mTimeTick >= 1.0f) {
+		mEnemy->mTimeTick = 0;
+		mEnemy->DoFire(mBulletsEnemy);
+	}
+	else {
+		mEnemy->mTimeTick += fElapsedTime;
+	}
+
+	mEnemyAimed->DoMove(olc::vf2d(1, 0), fElapsedTime);
+	if (mEnemyAimed->mTimeTick >= 2.0f) {
+		mEnemyAimed->mTimeTick = 0;
+		mEnemyAimed->DoFireAimed(mBulletsEnemy,mActor);
+	}
+	else {
+		mEnemyAimed->mTimeTick += fElapsedTime;
+	}
+#pragma endregion
+
+
+
+	this->Clear(olc::BLACK);
 
 	mActor->Render(this);
+	mEnemy->Render(this);
+	mEnemyAimed->Render(this);
 
 	for (vector<CBullet*>::iterator t = mBullets.begin(); t != mBullets.end(); ++t)
 	{
-		(*t)->Render(this);
+		if ((*t)->mIsActive) {
+			(*t)->DoMove((*t)->mMoveVector, fElapsedTime);
+			(*t)->Render(this);
+		}
+	}
+	for (vector<CBullet*>::iterator t = mBulletsEnemy.begin(); t != mBulletsEnemy.end(); ++t)
+	{
+		if ((*t)->mIsActive) {
+			(*t)->DoMove((*t)->mMoveVector, fElapsedTime);
+			(*t)->Render(this);
+		}
 	}
 
 	return true;
