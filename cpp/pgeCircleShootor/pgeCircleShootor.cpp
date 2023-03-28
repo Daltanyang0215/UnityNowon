@@ -24,9 +24,9 @@ bool pgeCircleShootor::OnUserCreate()
 	mEnemy->mActorMoveSpeed = 40;
 	mEnemy->color = olc::WHITE;
 	mEnemy->mPosition.x = ScreenWidth() * 0.5f;
-	mEnemy->mPosition.y = ScreenHeight() * 0.5f -45.0f;
+	mEnemy->mPosition.y = ScreenHeight() * 0.5f - 45.0f;
 	mEnemy->mIsActive = true;
-	
+
 	mEnemyAimed = new CEnemy();
 	mEnemyAimed->mActorMoveSpeed = 20;
 	mEnemyAimed->color = olc::GREY;
@@ -35,9 +35,17 @@ bool pgeCircleShootor::OnUserCreate()
 	mEnemyAimed->mIsActive = true;
 	mEnemyAimed->mTimeTick = 0.15f;
 
+	mEnemyCircle = new CEnemy();
+	mEnemyCircle->mActorMoveSpeed = 30;
+	mEnemyCircle->color = olc::DARK_RED;
+	mEnemyCircle->mPosition.x = ScreenWidth() * 0.5f;
+	mEnemyCircle->mPosition.y = ScreenHeight() * 0.5f - 105.0f;
+	mEnemyCircle->mIsActive = true;
+	mEnemyCircle->mTimeTick = 0.35f;
+
 	mBullets.clear();
 	CBullet* tpBullet = nullptr;
-	for (int i = 0; i <ACTOR_BULLET_COUNT ; i++)
+	for (int i = 0; i < ACTOR_BULLET_COUNT; i++)
 	{
 		tpBullet = new CBullet;
 		tpBullet->mRadius = 3;
@@ -57,6 +65,26 @@ bool pgeCircleShootor::OnUserCreate()
 		mBulletsEnemy.push_back(tpBullet);
 	}
 
+	mBulletsEnemyAimed.clear();
+	for (int i = 0; i < ENEMY_BULLET_COUNT; i++)
+	{
+		tpBullet = new CBullet;
+		tpBullet->mRadius = 3;
+		tpBullet->mActorMoveSpeed = 300;
+		tpBullet->color = olc::RED;
+		mBulletsEnemyAimed.push_back(tpBullet);
+	}
+
+	mBulletsEnemyCircled.clear();
+	for (int i = 0; i < ENEMY_BULLET_COUNT; i++)
+	{
+		tpBullet = new CBullet;
+		tpBullet->mRadius = 3;
+		tpBullet->mActorMoveSpeed = 300;
+		tpBullet->color = olc::RED;
+		mBulletsEnemyCircled.push_back(tpBullet);
+	}
+
 	return true;
 }
 bool pgeCircleShootor::OnUserDestroy() {
@@ -72,15 +100,19 @@ bool pgeCircleShootor::OnUserDestroy() {
 		delete mEnemyAimed;
 		mEnemyAimed = nullptr;
 	}
+	if (mEnemyCircle != nullptr) {
+		delete mEnemyCircle;
+		mEnemyCircle = nullptr;
+	}
 	//for (int i = 0; i < 10; i++)
 	/*{
 		delete mBullets[i];
 		mBullets[i] = nullptr;
 	}*/
-	for (vector<CBullet*>::iterator t = mBullets.begin();t!=mBullets.end();++t)
+	for (vector<CBullet*>::iterator t = mBullets.begin(); t != mBullets.end(); ++t)
 	{
 		if (*t != nullptr) {
-			delete *t;
+			delete* t;
 			*t = nullptr;
 		}
 	}
@@ -91,8 +123,24 @@ bool pgeCircleShootor::OnUserDestroy() {
 			*t = nullptr;
 		}
 	}
+	for (vector<CBullet*>::iterator t = mBulletsEnemyAimed.begin(); t != mBulletsEnemyAimed.end(); ++t)
+	{
+		if (*t != nullptr) {
+			delete* t;
+			*t = nullptr;
+		}
+	}
+	for (vector<CBullet*>::iterator t = mBulletsEnemyCircled.begin(); t != mBulletsEnemyCircled.end(); ++t)
+	{
+		if (*t != nullptr) {
+			delete* t;
+			*t = nullptr;
+		}
+	}
 	mBullets.clear();
 	mBulletsEnemy.clear();
+	mBulletsEnemyAimed.clear();
+	mBulletsEnemyCircled.clear();
 	return true;
 }
 
@@ -101,6 +149,55 @@ bool pgeCircleShootor::OnUserUpdate(float fElapsedTime)
 	//
 	// 윈도우 좌표계라서 y축이 반전되어있음
 	//
+	switch (mCurScenType)
+	{
+		UpdateTitle();
+	case SCENE_TITLE: {
+
+	}
+					break;
+	case SCENE_PLAYGAME: {
+		UpdatePlayGame(fElapsedTime);
+	}
+					   break;
+	default:
+		break;
+	}
+
+
+	return true;
+}
+
+void pgeCircleShootor::UpdateTitle()
+{
+	this->Clear(olc::DARK_CYAN);
+
+	if (GetKey(olc::SPACE).bReleased) {
+		mCurScenType = SCENE_PLAYGAME;
+	}
+}
+
+void pgeCircleShootor::UpdatePlayGame(float fElapsedTime)
+{
+
+#pragma region Collision
+	for (auto t : mBullets)
+	{
+		if (t->mIsActive) {
+			if (mEnemy->mIsActive) {
+				float tAdd = mEnemy->mRadius + t->mRadius;
+				float tDistance = std::powf(mEnemy->mPosition.x - t->mPosition.x, 2) + std::powf(mEnemy->mPosition.y - t->mPosition.y, 2);
+				if (tAdd * tAdd >= tDistance) {
+					mEnemy->mIsActive = false;
+					t->mIsActive = false;
+				}
+			}
+		}
+	}
+
+#pragma endregion
+
+
 
 #pragma region player Movement
 	olc::vf2d tVelocity(0, 0);
@@ -145,10 +242,19 @@ bool pgeCircleShootor::OnUserUpdate(float fElapsedTime)
 	mEnemyAimed->DoMove(olc::vf2d(1, 0), fElapsedTime);
 	if (mEnemyAimed->mTimeTick >= 2.0f) {
 		mEnemyAimed->mTimeTick = 0;
-		mEnemyAimed->DoFireAimed(mBulletsEnemy,mActor);
+		mEnemyAimed->DoFireAimed(mBulletsEnemyAimed, mActor);
 	}
 	else {
 		mEnemyAimed->mTimeTick += fElapsedTime;
+	}
+
+	mEnemyCircle->DoMove(olc::vf2d(1, 0), fElapsedTime);
+	if (mEnemyCircle->mTimeTick >= 3.0f) {
+		mEnemyCircle->mTimeTick = 0;
+		mEnemyCircle->DoFireCircle(mBulletsEnemyCircled);
+	}
+	else {
+		mEnemyCircle->mTimeTick += fElapsedTime;
 	}
 #pragma endregion
 
@@ -159,6 +265,7 @@ bool pgeCircleShootor::OnUserUpdate(float fElapsedTime)
 	mActor->Render(this);
 	mEnemy->Render(this);
 	mEnemyAimed->Render(this);
+	mEnemyCircle->Render(this);
 
 	for (vector<CBullet*>::iterator t = mBullets.begin(); t != mBullets.end(); ++t)
 	{
@@ -174,8 +281,20 @@ bool pgeCircleShootor::OnUserUpdate(float fElapsedTime)
 			(*t)->Render(this);
 		}
 	}
-
-	return true;
+	for (vector<CBullet*>::iterator t = mBulletsEnemyAimed.begin(); t != mBulletsEnemyAimed.end(); ++t)
+	{
+		if ((*t)->mIsActive) {
+			(*t)->DoMove((*t)->mMoveVector, fElapsedTime);
+			(*t)->Render(this);
+		}
+	}
+	for (vector<CBullet*>::iterator t = mBulletsEnemyCircled.begin(); t != mBulletsEnemyCircled.end(); ++t)
+	{
+		if ((*t)->mIsActive) {
+			(*t)->DoMove((*t)->mMoveVector, fElapsedTime);
+			(*t)->Render(this);
+		}
+	}
 }
 
 void pgeCircleShootor::DrawLineEquation(int tX_0, int tY_0, int tX_1, int tY_1) {

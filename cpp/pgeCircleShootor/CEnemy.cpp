@@ -44,3 +44,19 @@ void CEnemy::DoFireAimed(vector<CBullet*>& tBullets, CUnit* tpTarget) {
 		mCurIndexBullet = 0;
 	}
 }
+
+void CEnemy::DoFireCircle(vector<CBullet*>& tBullets) {
+
+	for (int i = 0; i < 8; i++)
+	{
+		tBullets[mCurIndexBullet]->mPosition = this->mPosition;
+		tBullets[mCurIndexBullet]->mIsActive = true;
+		tBullets[mCurIndexBullet]->mMoveVector = olc::vf2d(std::cosf(i *48*3.14159f /180), std::sinf(i * 48 * 3.14159f / 180));
+		if (mCurIndexBullet < ENEMY_BULLET_COUNT - 1) {
+			mCurIndexBullet++;
+		}
+		else {
+			mCurIndexBullet = 0;
+		}
+	}
+}
